@@ -1,0 +1,23 @@
+<div>
+
+  <div class="display-area">
+
+  <table id = "table01">
+    <caption><h3 style="text-decoration: none; color: blue">A list of user suggested edits:</h3></caption>
+    <br><br>
+    <tr>
+      <th>Headline</th>
+      <th>Comments</th>
+      <th>Correction</th>
+      <th>Done</th>
+    </tr>
+    <tr ng-repeat = "x in feed">
+      <td>{{x.headline}}</td>
+      <td>{{x.comments}}</td>
+      <td>{{x.correction}}</td>
+      <td><button class="button2" style = "background-color: #2bd800" ng-click = "done(x.id)">DONE</button></td>
+    </tr>
+  </table>
+
+  </div>
+</div>

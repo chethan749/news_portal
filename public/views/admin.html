@@ -1,0 +1,23 @@
+<div class="fromarea">
+
+      <form class="formarea" method="post" ng-submit="addnews()">
+      <div class="container">
+
+        <br><label style="font-family: sans-serif"><b>Logged in as: {{main}}</b></label><br><br>
+
+        <br><label style="font-family: sans-serif"><b>Head Line</b></label><br><br>
+        <input type="text" name="headline" ng-model="headline" required><br>
+
+        <br><label style="font-family: sans-serif"><b>Article</b></label><br><br>
+        <input type="text" name="content" ng-model="content" required><br>
+
+        <br><label style="font-family: sans-serif"><b>Image URL</b></label><br><br>
+        <input type="text" name="image" ng-model="image"><br><br>
+
+        <div class="form-actions">
+            <button style="width: 160px"type="submit" class="loginbtn">ADD ARTICLE</button>
+        </div>
+      </div>
+      </form>
+
+</div>
