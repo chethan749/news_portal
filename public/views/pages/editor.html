@@ -4,11 +4,11 @@
 
   <div class="article" ng-repeat="x in feed">
 
-    <a href="{{x.img_url}}"><p><img width="130px" height="120px" src="{{x.img_url}}"></p></a>
+    <a href="{{x.image_url}}"><p><img width="130px" height="120px" src="{{x.image_url}}"></p></a>
 
-    <strong style="font-size: 16px; color: #282828	">{{x.headline}}</strong>
-    <button class="button2" style="float: right;" ng-click="deletenews(x)">DISAPPROVE</button>
-    <button class="button2" style="float: right; background-color: #2bd800" ng-click="approvenews(x)">APPROVE</button>
+    <strong style="font-size: 16px; color: #282828	">{{x.title}}</strong>
+    <button class="button2" style="float: right;" ng-show = 'x.approval' ng-click="deletenews(x)">DISAPPROVE</button>
+    <button class="button2" style="float: right; background-color: #2bd800" ng-show = '!x.approval' ng-click="approvenews(x)">APPROVE</button>
     <br>
     <span style="font-size: 10px"class="badge">{{x.date}}</span>
 

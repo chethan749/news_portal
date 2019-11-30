@@ -36,8 +36,8 @@ app.controller('loginController', function($scope, $location, $http, $window) {
         //$('#login').hide();
         $window.localStorage["value"] = $scope.username;
         if($scope.permission == 'w') {
-          $window.localStorage['role'] = 'admin';
-          $location.path('/admin');
+          $window.localStorage['role'] = 'writer';
+          $location.path('/writer');
         }
         else if($scope.permission == 'e') {
           $window.localStorage['role'] = 'editor';
@@ -58,27 +58,42 @@ app.controller('loginController', function($scope, $location, $http, $window) {
 });
 
 
-app.controller('homeController', function($scope,$http, $resource, $route) {
+app.controller('homeController', function($scope, $http, $resource, $route) {
   $scope.main = "Home";
-  var test = {};
   var info=$resource('/home');
   info.query(function(result){
           $scope.feed = result;
      })
 });
 
-app.controller('ratingController', function($scope, $http) {
+app.controller('ratingController', function($scope, $http, $location, $route) {
   $scope.rate = function() {
-    alert('You rated the article ' + $scope.rating)
+    $http({
+      url: '/rate',
+      method: 'post',
+      data: {
+        "article_id": $scope.x.article_id,
+        "rating": $scope.rating,
+      }
+    }).then(function(data) {
+      if(data.data.affectedRows) {
+        alert('You rated the article ' + $scope.rating)
+        $location.path($location.url());
+        $route.reload();
+      }
+      else {
+        alert('Article Rating failed');
+      }
+    }, function(err){})
   }
 });
 
-app.controller('adminController', function($scope,$http, $window, $resource, $route ,$location ){
+app.controller('writerController', function($scope,$http, $window, $resource, $route ,$location ){
   $scope.main=localStorage.value;
 
 
-  if($window.localStorage.value && $window.localStorage.role == 'admin')
-    $location.path('/admin');
+  if($window.localStorage.value && $window.localStorage.role == 'writer')
+    $location.path('/writer');
   else {
     $location.path('/home');
     alert('Please complete login before accessing this page');
@@ -86,13 +101,13 @@ app.controller('adminController', function($scope,$http, $window, $resource, $ro
 
   $scope.addnews = function() {
     $http({
-      url: '/admin',
+      url: '/writer',
       method: 'post',
       data: {
         "headline": $scope.headline,
         "content": $scope.content,
         "image": $scope.image,
-        "adminname": $window.localStorage["value"]
+        "writername": $window.localStorage["value"]
       }
     }).then(function(data) {
       if(data.data.success) {
@@ -128,12 +143,13 @@ app.controller('editorController', function($scope,$http, $window, $resource, $r
          url: '/delete',
          method: 'post',
          data: {
-           "deleteheadline": x.headline
+           "deleteheadline": x.title
          }
        }).then(function(data) {
          if(data.data.success) {
            alert("Success!");
            $location.path('/editor');
+           $route.reload();
          }
          else {
            alert(data.data.message);
@@ -146,12 +162,13 @@ app.controller('editorController', function($scope,$http, $window, $resource, $r
          url: '/approve',
          method: 'post',
          data: {
-           "appheadline": x.headline
+           "appheadline": x.title
          }
        }).then(function(data) {
          if(data.data.success) {
            alert("Success!");
            $location.path('/editor');
+           $route.reload();
          }
          else {
            alert(data.data.message);
@@ -246,17 +263,6 @@ app.controller('internationalController', function($scope,$http, $resource, $rou
      })
 });
 
-
-app.controller('pollController', function($scope,$http, $window, $resource, $route ,$location ){
-  $scope.main="Polling";
-
-  var info=$resource('/poll'/*, null, {query: {method: 'GET', isArray: false}}*/);
-  info.query().$promise.then(function(result){
-          console.log(result);
-          $scope.feed = result;
-     })
-});
-
 app.controller('suggestededitsController', function($scope, $window, $http, $resource, $route, $location) {
   if(!($window.localStorage.role == 'editor')) {
     alert('Please complete login before accessing this page');
@@ -267,12 +273,13 @@ app.controller('suggestededitsController', function($scope, $window, $http, $res
     $scope.feed = result;
     console.log(result);
   });
-  $scope.done = function(id) {
+  $scope.done = function(email, title) {
     $http({
       url: '/done',
       method: 'post',
       data: {
-        "id": id
+        "email": email,
+        "title": title
       }
     }).then(function(data) {
       if(data.data.success) {

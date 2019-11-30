@@ -10,7 +10,7 @@ var
   port = 4000;
 
 var sqlConfig = {
-      user: 'chethan',
+      user: 'gagan',
       password: 'password',
       server: 'localhost',
       database: 'news_portal'
@@ -51,8 +51,9 @@ app.post("/login", function(req , res){
 
   })
 });
+
 app.get("/suggestededits", function(req,res){
-  connection.query('select id, comments, headline, correction from feedback where done = 0', function(err, result) {
+  connection.query('select email, comments, title, correction from feedback where done = 0', function(err, result) {
     if(err)
     {
       console.log(err);
@@ -64,9 +65,10 @@ app.get("/suggestededits", function(req,res){
     }
   })
 });
+
 app.get("/editor", function(req, res){
   //console.log("New path" + newpath);
-  connection.query("select * from article ORDER BY aid desc", function(err, data){
+  connection.query("select * from article ORDER BY article_id desc", function(err, data){
     if(err)
     {
       console.log("Error while querying database :- " + err);
@@ -81,7 +83,7 @@ app.get("/editor", function(req, res){
 });
 //////////////////////////////////////////////////////////////////////////////////////////////
 app.get("/home", function(req, res){
-      connection.query("select * from article WHERE approval=1 ORDER BY aid desc", function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id WHERE approval=1 ORDER BY article.article_id desc", function(err, data){
         if(err)
         {
           console.log("Error while querying database :- " + err);
@@ -96,7 +98,7 @@ app.get("/home", function(req, res){
 });
 
 app.get("/politics", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [1111, 1], function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [1111, 1], function(err, data){
 
         if(err)
         {
@@ -111,7 +113,7 @@ app.get("/politics", function(req, res){
       })
 });
 app.get("/technology", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [2222, 1], function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [2222, 1], function(err, data){
         if(err)
         {
           console.log("Error while querying database :- " + err);
@@ -125,7 +127,7 @@ app.get("/technology", function(req, res){
       })
 });
 app.get("/international", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [3333, 1], function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [3333, 1], function(err, data){
         if(err)
         {
           console.log("Error while querying database :- " + err);
@@ -139,7 +141,7 @@ app.get("/international", function(req, res){
       })
 });
 app.get("/business", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [4444, 1], function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [4444, 1], function(err, data){
         if(err)
         {
           console.log("Error while querying database :- " + err);
@@ -153,7 +155,7 @@ app.get("/business", function(req, res){
       })
 });
 app.get("/movies", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [5555, 1], function(err, data){
+      connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [5555, 1], function(err, data){
         if(err)
         {
           console.log("Error while querying database :- " + err);
@@ -167,40 +169,54 @@ app.get("/movies", function(req, res){
       })
 });
 app.get("/sports", function(req, res){
-      connection.query("select * from article where cid = ? AND approval = ?", [6666, 1], function(err, data){
-        if(err)
-        {
-          console.log("Error while querying database :- " + err);
-          res.send(err);
-        }
-        else {
-        //  console.log(data);
-          res.send(data);
+  connection.query("select article.article_id, title, content, date, image_url, rating from article join rating on article.article_id = rating.article_id where category_id = ? AND approval = ?", [6666, 1], function(err, data){
+    if(err)
+    {
+      console.log("Error while querying database :- " + err);
+      res.send(err);
+    }
+    else {
+    //  console.log(data);
+      res.send(data);
 
-        }
-      })
+    }
+  })
+});
+
+app.post("/rate", function(req, res){
+  connection.query("update rating set rating = (count * rating + ?) / (count + 1), count = count + 1 where article_id = ?", [req.body.rating, req.body.article_id], function(err, data){
+    if(err)
+    {
+      console.log("Error while querying database :- " + err);
+      res.send(err);
+    }
+    else {
+    //  console.log(data);
+      res.send(data);
+    }
+  });
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-app.post("/admin", function(req, res){
+app.post("/writer", function(req, res){
   //console.log("New path" + newpath);
-  var adminid;
+  var writerid;
   var cat;
   var dat = datetime.create();
   var formatteddate = dat.format('Y-m-d H:M:S');
 
-  connection.query('select emp_id from employee WHERE username = ?', [req.body.adminname], function(err, data){
+  connection.query('select emp_id from employee WHERE username = ?', [req.body.writername], function(err, data){
     if(err) throw err;
-    adminid = data[0].emp_id;
+    writerid = data[0].emp_id;
 
 
-  connection.query('select cid from category WHERE writer_id = ?', adminid, function(err, data){
+  connection.query('select category_id from category WHERE writer_id = ?', writerid, function(err, data){
     if(err) throw err;
 
-    cat = data[0].cid;
+    cat = data[0].category_id;
 
 
-    connection.query('insert into article (content, date, writer_id, img_url, cid, headline, approval) values(?, ?, ?, ?, ?, ?, ?)',[req.body.content, formatteddate, adminid, req.body.image, cat, req.body.headline, 0], function(err, result){
+    connection.query('insert into article (content, date, writer_id, image_url, category_id, title, approval) values(?, ?, ?, ?, ?, ?, ?)',[req.body.content, formatteddate, writerid, req.body.image, cat, req.body.headline, 0], function(err, result){
 
       if(err)
       {
@@ -219,7 +235,7 @@ app.post("/admin", function(req, res){
 
 app.post("/delete", function(req, res){
 
-  connection.query('delete from article WHERE( headline = ?)', [req.body.deleteheadline], function(err, data){
+  connection.query('delete from article WHERE( title = ?)', [req.body.deleteheadline], function(err, data){
 
       if(err || (data.affectedRows==0))
       {
@@ -239,7 +255,7 @@ app.post("/approve", function(req, res){
 
     console.log(req.body.appheadline);
 
-    connection.query('update article set approval = ? where headline = ?',[1, req.body.appheadline], function(err, data){
+    connection.query('update article set approval = ? where title = ?',[1, req.body.appheadline], function(err, data){
 
       if(err || (data.affectedRows==0))
       {
@@ -258,7 +274,7 @@ app.post("/approve", function(req, res){
 app.post("/feedback", function(req, res){
   //console.log("New path" + newpath);
 
-    connection.query('insert into feedback (email, phone, comments, headline, correction, done) values(?, ?, ?, ?, ?, 0)',[req.body.email, req.body.phone, req.body.comment, req.body.line, req.body.correction], function(err, result){
+    connection.query('insert into feedback (email, phone, comments, title, correction, done) values(?, ?, ?, ?, ?, 0)',[req.body.email, req.body.phone, req.body.comment, req.body.line, req.body.correction], function(err, result){
       if(err)
       {
         console.log(err);
@@ -272,38 +288,8 @@ app.post("/feedback", function(req, res){
   })
 });
 
-app.get("/poll", function(req, res){
-      connection.query("select pa.question as question, po.option_value as option_value from poll_analysis as pa, poll_options as po where pa.pid = po.pid order by pa.pid, po.option_no", function(err, data){
-        if(err)
-        {
-          console.log("Error while querying database :- " + err);
-          res.send(err);
-        }
-        else {
-        var result = [];
-        var temp = {};
-        for (var i in data) {
-          if(typeof(temp['question']) == 'undefined') {
-            temp['question'] = data[i].question;
-            temp['options'] = [];
-          }
-          if(data[i].question != temp['question']) {
-            result.push(JSON.parse(JSON.stringify(temp)));
-            temp['question'] = data[i].question;
-            temp['options'] = [];
-          }
-          temp['options'].push(data[i].option_value);
-          //console.log(result, temp);
-          }
-          result.push(temp);
-          console.log(result);
-          res.send(result);
-        }
-      })
-});
-
 app.post("/done", function(req, res) {
-  connection.query("update feedback set done = 1 where id = ?", [req.body.id], function(err, data) {
+  connection.query("update feedback set done = 1 where email = ? and title = ?", [req.body.email, req.body.title], function(err, data) {
     if(err)
     {
       console.log(err);

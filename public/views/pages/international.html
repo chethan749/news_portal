@@ -4,17 +4,27 @@
 
   <div class="article" ng-repeat="x in feed">
 
-    <a href="{{x.img_url}}"><p><img width="120px" height="120px" src="{{x.img_url}}"></p></a>
+    <img width="130px" height="120px" style="float: left; margin: 1%;" src="{{x.image_url}}"></p>
 
-    <strong style="font-size: 16px; color: #282828	">{{x.headline}}</strong>
+    <strong style="font-size: 16px; color: #282828	">{{x.title}}</strong>
     <br>
     <span style="font-size: 10px"class="badge">{{x.date}}</span>
 
     <p style="text-align: justify">{{x.content}}</p>
 
-    <div class="rating">
-      <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
-    </div>
+    <div style='display: inline;'>
+        <span>Average rating: {{x.rating == 0? 'N/A': x.rating.toFixed(1)}}</span>
+        <span style="float: right; padding-right: 2%;">Give a rating!</span>
+      </div>
+      <div class="rating" ng-controller = 'ratingController' ng-init = 'rating = 0'>
+        <a href style = "color: black" ng-click = "rating = 5; rate()">☆</a>&nbsp;&nbsp;
+        <a href style = "color: black" ng-click = "rating = 4; rate()">☆</a>&nbsp;&nbsp;
+        <a href style = "color: black" ng-click = "rating = 3; rate()">☆</a>&nbsp;&nbsp;
+        <a href style = "color: black" ng-click = "rating = 2; rate()">☆</a>&nbsp;&nbsp;
+        <a href style = "color: black" ng-click = "rating = 1; rate()">☆</a>
+        <br>
+        <br>
+      </div>
 
   </div>
 

@@ -10,17 +10,13 @@ app.config(function($routeProvider) {
     templateUrl: 'views/home.html',
     controller: 'homeController'
   })
-  .when('/admin', {
-    templateUrl: 'views/admin.html',
-    controller: 'adminController'
+  .when('/writer', {
+    templateUrl: 'views/writer.html',
+    controller: 'writerController'
   })
   .when('/editor', {
     templateUrl: 'views/pages/editor.html',
     controller: 'editorController'
-  })
-  .when('/poll', {
-    templateUrl: 'views/pages/poll.html',
-    controller: 'pollController'
   })
   .when('/politics', {
     templateUrl: 'views/pages/politics.html',
@@ -53,6 +49,9 @@ app.config(function($routeProvider) {
   .when('/suggestededits', {
     templateUrl: 'views/pages/suggestededits.html',
     controller: 'suggestededitsController'
+  })
+  .when('/contactus', {
+    templateUrl: 'views/contactus.html',
   })
   .otherwise({
     redirectTo: '/home'
